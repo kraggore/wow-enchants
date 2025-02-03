@@ -17,10 +17,7 @@ ENV NODE_ENV=production
 # Build the application
 RUN npm run build
 
-# Install serve to run the built application
-RUN npm install -g serve
-
 EXPOSE 5173
 
-# Serve the built application
-CMD ["serve", "-s", "dist", "-l", "5173"]
+# Use Vite's preview command to serve the built files
+CMD ["npm", "run", "preview", "--", "--host", "0.0.0.0"]
