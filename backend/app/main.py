@@ -14,7 +14,8 @@ app.add_middleware(
         "http://10.0.0.2:5173",
         "http://localhost:5173",
         "http://wow-enchants.murumb.dev",
-        "https://wow-enchants.murumb.dev"
+        "https://wow-enchants.murumb.dev",
+        "https://wow-api.murumb.dev"
     ],
     allow_credentials=True,
     allow_methods=["*"],
