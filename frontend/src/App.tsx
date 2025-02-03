@@ -1,6 +1,8 @@
 import { useState, useEffect, useMemo } from 'react'
 import './App.css'
 
+const API_BASE_URL = import.meta.env.VITE_API_URL;
+
 interface Reagent {
   name: string;
   quantity: number;
@@ -49,7 +51,7 @@ function App() {
         new Array(item.quantity).fill(item.enchant.id)
       );
 
-      const response = await fetch('http://localhost:8000/calculate/', {
+      const response = await fetch(`${API_BASE_URL}/calculate/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(enchantIds),
@@ -118,7 +120,7 @@ function App() {
 
   const fetchEnchants = async () => {
     try {
-      const response = await fetch('http://localhost:8000/enchants/');
+      const response = await fetch(`${API_BASE_URL}/enchants/`);
       if (!response.ok) throw new Error('Failed to fetch enchants');
       const data = await response.json();
       setEnchants(data);
@@ -130,7 +132,7 @@ function App() {
   const addEnchant = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://localhost:8000/enchants/', {
+      const response = await fetch(`${API_BASE_URL}/enchants/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ url: newEnchantUrl }),
@@ -151,7 +153,7 @@ function App() {
   const deleteEnchant = async (id: number, e: React.MouseEvent) => {
     e.stopPropagation();
     try {
-      const response = await fetch(`http://localhost:8000/enchants/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/enchants/${id}`, {
         method: 'DELETE',
       });
       if (!response.ok) {
