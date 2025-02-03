@@ -70,6 +70,3 @@ docker-compose.override.yml
 
 # env
 .env
-.env.development
-.env.test
-.env.production
