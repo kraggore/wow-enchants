@@ -2,14 +2,14 @@ version: '3.8'
 
 services:
   backend:
-    build: ./backend
+    build:
+      context: ./backend
     ports:
       - "8000:8000"
     volumes:
       - ./backend:/app
-      - /app/node_modules
-    environment:
-      - DATABASE_URL=sqlite:///./sql_app.db
+    env_file:
+      - ./backend/.env
     restart: unless-stopped
 
   frontend:

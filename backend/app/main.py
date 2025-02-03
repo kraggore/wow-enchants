@@ -1,9 +1,12 @@
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException, Security
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from typing import List
 from . import models, scraper
 from pydantic import BaseModel
+from fastapi.security.api_key import APIKeyHeader, APIKey
+from starlette.status import HTTP_403_FORBIDDEN
+import os
 
 app = FastAPI()
 
@@ -22,11 +25,23 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+API_KEY = os.getenv("API_KEY", "your-secret-api-key-here")
+API_KEY_NAME = "X-API-Key"
+
+api_key_header = APIKeyHeader(name=API_KEY_NAME, auto_error=True)
+
+async def get_api_key(api_key_header: str = Security(api_key_header)):
+    if api_key_header == API_KEY:
+        return api_key_header
+    raise HTTPException(
+        status_code=HTTP_403_FORBIDDEN, detail="Could not validate API key"
+    )
+
 class EnchantUrlRequest(BaseModel):
     url: str
 
 @app.post("/enchants/", response_model=models.Enchant)
-async def create_enchant(request: EnchantUrlRequest, db: Session = Depends(models.get_db)):
+async def create_enchant(request: EnchantUrlRequest, db: Session = Depends(models.get_db), api_key: APIKey = Depends(get_api_key)):
     # Check if enchant already exists
     db_enchant = db.query(models.EnchantDB).filter(models.EnchantDB.url == request.url).first()
     if db_enchant:
@@ -50,11 +65,11 @@ async def create_enchant(request: EnchantUrlRequest, db: Session = Depends(model
     return db_enchant
 
 @app.get("/enchants/", response_model=List[models.Enchant])
-def get_enchants(db: Session = Depends(models.get_db)):
+async def get_enchants(db: Session = Depends(models.get_db), api_key: APIKey = Depends(get_api_key)):
     return db.query(models.EnchantDB).all()
 
 @app.delete("/enchants/{enchant_id}")
-def delete_enchant(enchant_id: int, db: Session = Depends(models.get_db)):
+async def delete_enchant(enchant_id: int, db: Session = Depends(models.get_db), api_key: APIKey = Depends(get_api_key)):
     enchant = db.query(models.EnchantDB).filter(models.EnchantDB.id == enchant_id).first()
     if not enchant:
         raise HTTPException(status_code=404, detail="Enchant not found")
@@ -63,7 +78,7 @@ def delete_enchant(enchant_id: int, db: Session = Depends(models.get_db)):
     return {"message": "Enchant deleted"}
 
 @app.post("/calculate/")
-def calculate_total(enchant_ids: List[int], db: Session = Depends(models.get_db)):
+async def calculate_total(enchant_ids: List[int], db: Session = Depends(models.get_db), api_key: APIKey = Depends(get_api_key)):
     # Count how many times each enchant ID appears
     id_counts = {}
     for enchant_id in enchant_ids:

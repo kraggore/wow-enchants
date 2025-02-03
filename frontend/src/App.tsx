@@ -2,6 +2,12 @@ import { useState, useEffect, useMemo } from 'react'
 import './App.css'
 
 const API_BASE_URL = import.meta.env.VITE_API_URL;
+const API_KEY = import.meta.env.VITE_API_KEY;
+
+const headers = {
+  'X-API-Key': API_KEY,
+  'Content-Type': 'application/json',
+};
 
 interface Reagent {
   name: string;
@@ -53,7 +59,7 @@ function App() {
 
       const response = await fetch(`${API_BASE_URL}/calculate/`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify(enchantIds),
       });
 
@@ -120,7 +126,9 @@ function App() {
 
   const fetchEnchants = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/enchants/`);
+      const response = await fetch(`${API_BASE_URL}/enchants/`, {
+        headers,
+      });
       if (!response.ok) throw new Error('Failed to fetch enchants');
       const data = await response.json();
       setEnchants(data);
@@ -134,7 +142,7 @@ function App() {
     try {
       const response = await fetch(`${API_BASE_URL}/enchants/`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({ url: newEnchantUrl }),
       });
       if (!response.ok) {
@@ -155,6 +163,7 @@ function App() {
     try {
       const response = await fetch(`${API_BASE_URL}/enchants/${id}`, {
         method: 'DELETE',
+        headers,
       });
       if (!response.ok) {
         const errorData = await response.json();
