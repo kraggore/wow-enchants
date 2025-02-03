@@ -11,7 +11,7 @@ app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "http://10.0.0.1:5173",
+        "http://10.0.0.2:5173",
         "http://localhost:5173",
         "http://wow-enchants.murumb.dev",
         "https://wow-enchants.murumb.dev"
