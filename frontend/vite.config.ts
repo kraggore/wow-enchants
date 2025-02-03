@@ -8,11 +8,11 @@ export default defineConfig({
   server: {
     host: '0.0.0.0',
     port: 5173,
-    allowedHosts: ['wow-api.murumb.dev', 'localhost']
+    allowedHosts: ['wow-enchants.murumb.dev', 'wow-api.murumb.dev', 'localhost']
   },
   preview: {
     host: '0.0.0.0',
     port: 5173,
-    allowedHosts: ['wow-enchants.murumb.dev', 'localhost']
+    allowedHosts: ['wow-enchants.murumb.dev', 'wow-api.murumb.dev', 'localhost']
   }
 })
